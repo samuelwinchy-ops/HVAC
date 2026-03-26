@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoolHome Compare</title>
+  <meta name="description" content="Compare air conditioning quotes from trusted local installers." />
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --panel: #ffffff;
+      --panel-soft: #f5f5f4;
+      --border: #e7e5e4;
+      --text: #0f172a;
+      --muted: #64748b;
+      --muted-2: #78716c;
+      --dark: #0f172a;
+      --dark-hover: #1e293b;
+      --success-bg: #f0fdf4;
+      --success-text: #15803d;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      --radius-xl: 32px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --container: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 40px 24px;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .left-panel {
+      padding: 32px;
+    }
+
+    .right-panel {
+      padding: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel-soft);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    h1 {
+      margin: 24px 0 0;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .intro {
+      margin-top: 20px;
+      max-width: 42rem;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .benefits {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .benefit {
+      border: 1px solid var(--border);
+      background: var(--panel-soft);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .benefit-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .benefit-text {
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #94a3b8;
+    }
+
+    h2 {
+      margin: 8px 0 0;
+      font-size: 32px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .completed-box {
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background: #f5f5f4;
+      text-align: center;
+      min-width: 110px;
+    }
+
+    .completed-box .small,
+    .progress-row,
+    .answer-status,
+    .help-text,
+    .summary-copy,
+    .detail-row span:first-child,
+    .muted {
+      color: var(--muted);
+    }
+
+    .completed-box .small {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .completed-box .big {
+      margin-top: 4px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .progress-block {
+      margin-top: 24px;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--dark);
+      border-radius: 999px;
+      transition: width 0.28s ease;
+    }
+
+    .step-stage {
+      margin-top: 32px;
+      min-height: 340px;
+      position: relative;
+    }
+
+    .step-pane {
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .step-pane.animating-out {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+
+    .step-pane.animating-in {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+
+    .question-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #94a3b8;
+    }
+
+    .question-title {
+      margin-top: 8px;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+
+    .help-text {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .options-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .option-btn,
+    .back-btn,
+    .continue-btn,
+    .edit-btn,
+    .primary-btn {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font: inherit;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .option-btn {
+      background: var(--panel);
+      color: #334155;
+      padding: 20px 16px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .option-btn:hover {
+      border-color: var(--dark);
+      background: var(--panel-soft);
+    }
+
+    .option-btn.selected {
+      background: var(--dark);
+      color: #fff;
+      border-color: var(--dark);
+    }
+
+    .input-wrap {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .text-input {
+      width: 100%;
+      border: 1px solid #d6d3d1;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: #fff;
+    }
+
+    .text-input:focus {
+      border-color: var(--dark);
+      box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+    }
+
+    .continue-btn,
+    .primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--dark);
+      color: #fff;
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      border-color: var(--dark);
+      width: fit-content;
+    }
+
+    .continue-btn:hover,
+    .primary-btn:hover {
+      background: var(--dark-hover);
+      border-color: var(--dark-hover);
+    }
+
+    .continue-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .nav-row {
+      margin-top: 16px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn,
+    .edit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      color: var(--text);
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .back-btn:hover,
+    .edit-btn:hover {
+      background: var(--panel-soft);
+    }
+
+    .back-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .summary-screen {
+      display: none;
+    }
+
+    .summary-screen.active,
+    .funnel-screen.active {
+      display: block;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--success-bg);
+      color: var(--success-text);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    .summary-title {
+      margin: 16px 0 0;
+      font-size: 32px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .summary-copy {
+      margin-top: 12px;
+      max-width: 42rem;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .summary-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .summary-card {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .summary-card.soft {
+      background: var(--panel-soft);
+    }
+
+    .summary-card h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .details {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .detail-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .detail-row strong {
+      color: var(--text);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .summary-note {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--panel-soft);
+    }
+
+    .summary-note-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .summary-note p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1024px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        padding: 20px 14px;
+      }
+
+      .left-panel,
+      .right-panel {
+        padding: 20px;
+      }
+
+      .benefits,
+      .options-grid,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-head,
+      .nav-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .completed-box,
+      .continue-btn,
+      .primary-btn,
+      .edit-btn,
+      .back-btn {
+        width: 100%;
+      }
+
+      .detail-row {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .detail-row strong {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="container">
+      <div class="grid">
+        <div class="card left-panel">
+          <div class="badge">Professional quote funnel</div>
+          <h1>Compare air conditioning quotes from trusted local installers.</h1>
+          <p class="intro">
+            A cleaner one-question-at-a-time experience designed to reduce friction and guide visitors smoothly toward quote comparison.
+          </p>
+
+          <div class="benefits">
+            <div class="benefit">
+              <div class="benefit-title">Free to use</div>
+              <div class="benefit-text">No cost and no obligation to proceed.</div>
+            </div>
+            <div class="benefit">
+              <div class="benefit-title">Clear process</div>
+              <div class="benefit-text">Simple steps with better form completion flow.</div>
+            </div>
+            <div class="benefit">
+              <div class="benefit-title">Qualified matches</div>
+              <div class="benefit-text">Suitable local professionals based on project details.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card right-panel">
+          <div id="funnelScreen" class="funnel-screen active">
+            <div class="panel-head">
+              <div>
+                <div id="stepLabel" class="eyebrow">Step 1 of 9</div>
+                <h2>Request quotes</h2>
+              </div>
+              <div class="completed-box">
+                <div class="small">Completed</div>
+                <div id="completedCount" class="big">0/8</div>
+              </div>
+            </div>
+
+            <div class="progress-block">
+              <div class="progress-row">
+                <span>Progress</span>
+                <span id="progressText">11%</span>
+              </div>
+              <div class="progress-track">
+                <div id="progressFill" class="progress-fill"></div>
+              </div>
+            </div>
+
+            <div class="step-stage">
+              <div id="stepPane" class="step-pane"></div>
+            </div>
+
+            <div class="nav-row">
+              <button id="backBtn" class="back-btn" type="button" disabled>
+                <span>←</span>
+                <span>Back</span>
+              </button>
+              <div id="answerStatus" class="answer-status">Awaiting answer</div>
+            </div>
+          </div>
+
+          <div id="summaryScreen" class="summary-screen">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+              <div>
+                <div class="status-badge">
+                  <span>✓</span>
+                  <span>Enquiry complete</span>
+                </div>
+                <h2 class="summary-title">Ready for quote comparison</h2>
+                <p class="summary-copy">
+                  The visitor has completed the funnel. These details can now be passed into a quote comparison or installer matching stage.
+                </p>
+              </div>
+              <button id="editBtn" class="edit-btn" type="button">Edit responses</button>
+            </div>
+
+            <div class="progress-block">
+              <div class="progress-row">
+                <span>Completion</span>
+                <span>100%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width:100%"></div>
+              </div>
+            </div>
+
+            <div class="summary-grid">
+              <div class="summary-card soft">
+                <h3>Submitted details</h3>
+                <div class="details" id="detailsList"></div>
+              </div>
+
+              <div class="summary-card">
+                <h3>Next stage</h3>
+                <div style="margin-top:16px;display:flex;flex-direction:column;gap:16px;">
+                  <div class="summary-note">
+                    <div class="summary-note-title">Installer matching ready</div>
+                    <p>
+                      The enquiry now contains the core information typically needed for quote routing and comparison.
+                    </p>
+                  </div>
+
+                  <button type="button" class="primary-btn w-full">Compare Available Quotes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const funnelSteps = [
+      {
+        key: "service",
+        type: "options",
+        label: "What service do you require?",
+        options: ["New installation", "Replacement", "Repair", "Maintenance"]
+      },
+      {
+        key: "propertyType",
+        type: "options",
+        label: "What type of property is this for?",
+        options: ["House", "Flat / Apartment", "Office", "Commercial premises"]
+      },
+      {
+        key: "rooms",
+        type: "options",
+        label: "How many rooms require cooling?",
+        options: ["1 room", "2 rooms", "3 rooms", "4+ rooms"]
+      },
+      {
+        key: "roomSize",
+        type: "options",
+        label: "What is the approximate room size?",
+        options: ["Under 50m²", "50m² – 100m²", "101m² – 200m²", "Over 200m²"]
+      },
+      {
+        key: "postcode",
+        type: "input",
+        label: "What is the installation postcode?",
+        placeholder: "e.g. SW1A 1AA",
+        inputType: "text"
+      },
+      {
+        key: "timeframe",
+        type: "options",
+        label: "When are you looking to proceed?",
+        options: ["As soon as possible", "Within 1 month", "Within 3 months", "Just researching options"]
+      },
+      {
+        key: "fullName",
+        type: "input",
+        label: "What is your full name?",
+        placeholder: "Your full name",
+        inputType: "text"
+      },
+      {
+        key: "email",
+        type: "input",
+        label: "What is your email address?",
+        placeholder: "you@example.com",
+        inputType: "email"
+      },
+      {
+        key: "phone",
+        type: "input",
+        label: "What is your phone number?",
+        placeholder: "Your phone number",
+        inputType: "tel",
+        optional: true
+      }
+    ];
+
+    const formData = {
+      service: "",
+      propertyType: "",
+      rooms: "",
+      roomSize: "",
+      postcode: "",
+      timeframe: "",
+      fullName: "",
+      email: "",
+      phone: ""
+    };
+
+    let currentStep = 0;
+
+    const stepLabel = document.getElementById("stepLabel");
+    const completedCount = document.getElementById("completedCount");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const stepPane = document.getElementById("stepPane");
+    const answerStatus = document.getElementById("answerStatus");
+    const backBtn = document.getElementById("backBtn");
+    const funnelScreen = document.getElementById("funnelScreen");
+    const summaryScreen = document.getElementById("summaryScreen");
+    const detailsList = document.getElementById("detailsList");
+    const editBtn = document.getElementById("editBtn");
+
+    function isFilled(step) {
+      if (step.optional) return false;
+      return String(formData[step.key] || "").trim() !== "";
+    }
+
+    function getCompletedSteps() {
+      return funnelSteps.filter(isFilled).length;
+    }
+
+    function getProgressPercentage() {
+      return Math.round(((currentStep + 1) / funnelSteps.length) * 100);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function updateTopUi() {
+      const totalSteps = funnelSteps.length;
+      const completed = getCompletedSteps();
+      const progress = getProgressPercentage();
+      const activeStep = funnelSteps[currentStep];
+      const hasAnswer = String(formData[activeStep.key] || "").trim() !== "";
+
+      stepLabel.textContent = `Step ${currentStep + 1} of ${totalSteps}`;
+      completedCount.textContent = `${completed}/${totalSteps - 1}`;
+      progressText.textContent = `${progress}%`;
+      progressFill.style.width = `${progress}%`;
+      answerStatus.textContent = hasAnswer ? "Answer saved" : "Awaiting answer";
+      backBtn.disabled = currentStep === 0;
+    }
+
+    function animateAndRender(renderFn) {
+      stepPane.classList.add("animating-out");
+      setTimeout(() => {
+        stepPane.classList.remove("animating-out");
+        stepPane.classList.add("animating-in");
+        renderFn();
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            stepPane.classList.remove("animating-in");
+          });
+        });
+      }, 180);
+    }
+
+    function goToNextStep() {
+      if (currentStep < funnelSteps.length - 1) {
+        currentStep += 1;
+        animateAndRender(renderStep);
+      } else {
+        showSummary();
+      }
+    }
+
+    function renderStep() {
+      updateTopUi();
+      const step = funnelSteps[currentStep];
+
+      let content = `
+        <div>
+          <div class="question-label">Current question</div>
+          <div class="question-title">${escapeHtml(step.label)}</div>
+          ${step.optional ? '<p class="help-text">This step is optional.</p>' : ''}
+        </div>
+      `;
+
+      if (step.type === "options") {
+        const optionsHtml = step.options.map(option => {
+          const selected = formData[step.key] === option ? "selected" : "";
+          return `<button class="option-btn ${selected}" type="button" data-option="${escapeHtml(option)}">${escapeHtml(option)}</button>`;
+        }).join("");
+
+        content += `<div class="options-grid">${optionsHtml}</div>`;
+      } else {
+        const value = escapeHtml(formData[step.key] || "");
+        const disabled = !String(formData[step.key] || "").trim() && !step.optional ? "disabled" : "";
+
+        content += `
+          <div class="input-wrap">
+            <input
+              class="text-input"
+              id="stepInput"
+              type="${escapeHtml(step.inputType || 'text')}"
+              placeholder="${escapeHtml(step.placeholder || '')}"
+              value="${value}"
+            />
+            <button class="continue-btn" id="continueBtn" type="button" ${disabled}>
+              <span>Continue</span>
+              <span>→</span>
+            </button>
+          </div>
+        `;
+      }
+
+      stepPane.innerHTML = content;
+
+      if (step.type === "options") {
+        stepPane.querySelectorAll("[data-option]").forEach(button => {
+          button.addEventListener("click", () => {
+            formData[step.key] = button.getAttribute("data-option");
+            updateTopUi();
+            setTimeout(goToNextStep, 180);
+          });
+        });
+      } else {
+        const input = document.getElementById("stepInput");
+        const continueBtn = document.getElementById("continueBtn");
+
+        input.addEventListener("input", (event) => {
+          formData[step.key] = event.target.value;
+          const canContinue = Boolean(String(formData[step.key] || "").trim()) || step.optional;
+          continueBtn.disabled = !canContinue;
+          updateTopUi();
+        });
+
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            const canContinue = Boolean(String(formData[step.key] || "").trim()) || step.optional;
+            if (canContinue) goToNextStep();
+          }
+        });
+
+        continueBtn.addEventListener("click", goToNextStep);
+        input.focus();
+      }
+    }
+
+    function showSummary() {
+      funnelScreen.classList.remove("active");
+      funnelScreen.classList.add("hidden");
+      summaryScreen.classList.add("active");
+      summaryScreen.classList.remove("hidden");
+
+      const rows = [
+        ["Service", formData.service],
+        ["Property type", formData.propertyType],
+        ["Rooms", formData.rooms],
+        ["Room size", formData.roomSize],
+        ["Postcode", formData.postcode],
+        ["Timeframe", formData.timeframe],
+        ["Name", formData.fullName],
+        ["Email", formData.email],
+        ["Phone", formData.phone || "Not provided"]
+      ];
+
+      detailsList.innerHTML = rows.map(([label, value]) => `
+        <div class="detail-row">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+        </div>
+      `).join("");
+    }
+
+    function showFunnel() {
+      summaryScreen.classList.remove("active");
+      summaryScreen.classList.add("hidden");
+      funnelScreen.classList.add("active");
+      funnelScreen.classList.remove("hidden");
+      currentStep = 0;
+      renderStep();
+    }
+
+    backBtn.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep -= 1;
+        animateAndRender(renderStep);
+      }
+    });
+
+    editBtn.addEventListener("click", showFunnel);
+
+    renderStep();
+  </script>
+</body>
+</html>
